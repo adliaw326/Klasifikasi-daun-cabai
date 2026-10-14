@@ -1,4 +1,5 @@
 import os
+import urllib.request
 import numpy as np
 import tensorflow as tf
 import streamlit as st
@@ -11,6 +12,15 @@ from tensorflow.keras.applications import (
     MobileNetV3Large
 )
 
+MODEL_URL = "https://github.com/adliaw326/Klasifikasi-daun-cabai/releases/download/v1.0.0/cnn_phenotype_model_skenario3_tuned.h5"
+
+@st.cache_resource
+def load_cnn_model(model_path):
+    if not os.path.exists(model_path):
+        with st.spinner("Mengunduh model klasifikasi..."):
+            urllib.request.urlretrieve(MODEL_URL, model_path)
+
+    return tf.keras.models.load_model(model_path)
 
 # ==============================================================================
 # 1. PILIH SKENARIO
@@ -363,34 +373,57 @@ def load_phenotype_model(scenario):
         # ----------------------------------------------------------------------
         # SKENARIO 3
         # ----------------------------------------------------------------------
-        if scenario == 3:
-            model = tf.keras.models.load_model(
-                model_path,
-                compile=False
-            )
+       if scenario == 3:
+        model_url = (
+            "https://github.com/adliaw326/"
+            "Klasifikasi-daun-cabai/releases/download/"
+            "v1.0.0/cnn_phenotype_model_skenario3_tuned.h5"
+        )
+
+        if not os.path.exists(model_path):
+            with st.spinner("Mengunduh model InceptionV3..."):
+                urllib.request.urlretrieve(
+                    model_url,
+                    model_path
+                )
+
+        model = tf.keras.models.load_model(
+            model_path,
+            compile=False
+        )
         # ----------------------------------------------------------------------
         # SKENARIO 4
         # ----------------------------------------------------------------------
         elif scenario == 4:
-            model = build_scenario_4()
-            model.load_weights(
-                model_path
-            )
+        if not os.path.exists(model_path):
+            st.error(f"File model tidak ditemukan:\n{model_path}")
+            return None
+
+        model = build_scenario_4()
+        model.load_weights(model_path)
         # ----------------------------------------------------------------------
         # SKENARIO 5
         # ----------------------------------------------------------------------
         elif scenario == 5:
-            model = build_scenario_5()
-            model.load_weights(
-                model_path
-            )
-        return model
-    except Exception as e:
-        st.error(
-            f"Gagal memuat model Skenario {scenario}.\n\n"
-            f"Error: {e}"
-        )
+        if not os.path.exists(model_path):
+            st.error(f"File model tidak ditemukan:\n{model_path}")
+            return None
+
+        model = build_scenario_5()
+        model.load_weights(model_path)
+
+    else:
+        st.error(f"Skenario {scenario} tidak didukung.")
         return None
+
+    return model
+
+except Exception as e:
+    st.error(
+        f"Gagal memuat model Skenario {scenario}.\n\n"
+        f"Error: {e}"
+    )
+    return None
 
 
 # ==============================================================================

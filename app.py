@@ -350,7 +350,7 @@ def build_scenario_5():
 # 10. LOAD MODEL
 # ==============================================================================
 @st.cache_resource
-    def load_phenotype_model(scenario):
+def load_phenotype_model(scenario):
     config = MODEL_CONFIG[scenario]
     model_path = config["model_path"]
     

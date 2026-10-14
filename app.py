@@ -350,67 +350,67 @@ def build_scenario_5():
 # 10. LOAD MODEL
 # ==============================================================================
 @st.cache_resource
-def load_phenotype_model(scenario):
-config = MODEL_CONFIG[scenario]
-model_path = config["model_path"]
-
-try:
-    # ----------------------------------------------------------------------
-    # SKENARIO 3 - INCEPTIONV3
-    # ----------------------------------------------------------------------
-    if scenario == 3:
-        if not os.path.exists(model_path):
-            with st.spinner("Mengunduh model InceptionV3..."):
-                urllib.request.urlretrieve(
-                    MODEL_URL,
-                    model_path
+    def load_phenotype_model(scenario):
+    config = MODEL_CONFIG[scenario]
+    model_path = config["model_path"]
+    
+    try:
+        # ----------------------------------------------------------------------
+        # SKENARIO 3 - INCEPTIONV3
+        # ----------------------------------------------------------------------
+        if scenario == 3:
+            if not os.path.exists(model_path):
+                with st.spinner("Mengunduh model InceptionV3..."):
+                    urllib.request.urlretrieve(
+                        MODEL_URL,
+                        model_path
+                    )
+    
+            model = tf.keras.models.load_model(
+                model_path,
+                compile=False
+            )
+    
+        # ----------------------------------------------------------------------
+        # SKENARIO 4 - EFFICIENTNETB0
+        # ----------------------------------------------------------------------
+        elif scenario == 4:
+            if not os.path.exists(model_path):
+                st.error(
+                    f"File model tidak ditemukan:\n{model_path}"
                 )
-
-        model = tf.keras.models.load_model(
-            model_path,
-            compile=False
-        )
-
-    # ----------------------------------------------------------------------
-    # SKENARIO 4 - EFFICIENTNETB0
-    # ----------------------------------------------------------------------
-    elif scenario == 4:
-        if not os.path.exists(model_path):
+                return None
+    
+            model = build_scenario_4()
+            model.load_weights(model_path)
+    
+        # ----------------------------------------------------------------------
+        # SKENARIO 5 - MOBILENETV3LARGE
+        # ----------------------------------------------------------------------
+        elif scenario == 5:
+            if not os.path.exists(model_path):
+                st.error(
+                    f"File model tidak ditemukan:\n{model_path}"
+                )
+                return None
+    
+            model = build_scenario_5()
+            model.load_weights(model_path)
+    
+        else:
             st.error(
-                f"File model tidak ditemukan:\n{model_path}"
+                f"Skenario {scenario} tidak didukung."
             )
             return None
-
-        model = build_scenario_4()
-        model.load_weights(model_path)
-
-    # ----------------------------------------------------------------------
-    # SKENARIO 5 - MOBILENETV3LARGE
-    # ----------------------------------------------------------------------
-    elif scenario == 5:
-        if not os.path.exists(model_path):
-            st.error(
-                f"File model tidak ditemukan:\n{model_path}"
-            )
-            return None
-
-        model = build_scenario_5()
-        model.load_weights(model_path)
-
-    else:
+    
+        return model
+    
+    except Exception as e:
         st.error(
-            f"Skenario {scenario} tidak didukung."
+            f"Gagal memuat model Skenario {scenario}.\n\n"
+            f"Error: {e}"
         )
         return None
-
-    return model
-
-except Exception as e:
-    st.error(
-        f"Gagal memuat model Skenario {scenario}.\n\n"
-        f"Error: {e}"
-    )
-    return None
 
 # ==============================================================================
 # 11. HEADER APLIKASI

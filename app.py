@@ -14,14 +14,6 @@ from tensorflow.keras.applications import (
 
 MODEL_URL = "https://github.com/adliaw326/Klasifikasi-daun-cabai/releases/download/v1.0.0/cnn_phenotype_model_skenario3_tuned.h5"
 
-@st.cache_resource
-def load_cnn_model(model_path):
-    if not os.path.exists(model_path):
-        with st.spinner("Mengunduh model klasifikasi..."):
-            urllib.request.urlretrieve(MODEL_URL, model_path)
-
-    return tf.keras.models.load_model(model_path)
-
 # ==============================================================================
 # 1. PILIH SKENARIO
 # ==============================================================================
